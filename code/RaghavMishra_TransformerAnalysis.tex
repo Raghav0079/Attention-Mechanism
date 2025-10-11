@@ -1,0 +1,185 @@
+\documentclass{article}
+\usepackage{graphicx}
+
+\title{Attention is All You Need Analysis}
+\author{Raghav Mishra}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section{PART 1}
+\subsection{First Pass Summary}
+
+Proposal of a new single network architecture, Transformer, based solely on attention mechanisms.  
+Transformers don't rely on RNN or CNN; they use self-attention instead.
+
+Introduction to terms like encoder-decoder structure, encoder-decoder stacks, attention function, types of attention functions, and their applications.
+
+Comparison of self-attention layers with RNN and CNN.
+
+The model was trained on the WMT 2014 English-German dataset containing 4.5 million sentence pairs.  
+The WMT 2014 English-French dataset, containing 36 million sentences, was also used.
+
+Eight NVIDIA P100 GPUs were used for model training.
+
+The big Transformer model outperformed the best previously reported models on the WMT 2014 English-to-German translation task by more than 2.0 BLEU, achieving a new state-of-the-art score of 28.4 BLEU.  
+On the WMT 2014 English-to-French translation task, the big model achieved a BLEU score of 41.0.
+
+\subsection{Key Architecture Components}
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.7\textwidth]{transformer} % Change filename and width as needed
+    \caption{Transformer model architecture.}
+    \label{fig:transformer_arch}
+\end{figure}
+
+\subsection{Self Attention Mechanism}
+Self-attention helps the model focus on different words in a sentence when trying to understand each word.
+
+How It Works (Step-by-Step):
+\begin{enumerate}
+    \item Each word in the sentence is turned into a number vector (a list of numbers that represent meaning).
+    \item For every word, the model creates:
+    \begin{itemize}
+        \item A query: what the word is looking for.
+        \item A key: what the word offers to others.
+        \item A value: the actual meaning/info the word gives.
+    \end{itemize}
+    \item For a word like “sat”, the model:
+    \begin{itemize}
+        \item Looks at the queries and keys to see which other words are important.
+        \item Calculates scores for each word in the sentence (how much attention to pay).
+        \item Uses those scores to make a weighted average of all the value vectors (this creates a new, richer representation of the word "sat").
+    \end{itemize}
+    \item This is done for every word at the same time.
+\end{enumerate}
+
+\subsection{Training Methodology}
+Trained on the standard WMT 2014 English-German dataset consisting of about 4.5 million sentence pairs. Sentences were encoded using byte-pair encoding, which has a shared source-target vocabulary of about 37,000 tokens. For English-French, the significantly larger WMT 2014 English-French dataset consisting of 36M sentences was used and split tokens into a 32,000 word-piece vocabulary. Sentence pairs were batched together by approximate sequence length. Each training batch contained a set of sentence pairs containing approximately 25,000 source tokens and 25,000 target tokens.
+
+\subsection{Result Analysis}
+On the WMT 2014 English to German task the model outperformed previously existing models by more than 2 BLEU score and set a new state-of-the-art BLEU score of 28.4.  
+On the WMT 2014 English to French task the model achieved a BLEU score of 41.0.
+
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.9\textwidth]{Table 2.png} 
+    \caption{Summary of Results}
+    \label{Table}
+\end{figure}
+
+\section{Part 2}
+
+\subsection{Comparison with RNN/LSTM}
+\textbf{RNN:} Simple architecture, suitable for basic time-series data.
+
+\textbf{LSTM:} Mitigates vanishing gradient problem, effective for sequence data.
+
+\textbf{Transformers:} Parallelizable, captures global context, excellent scalability.
+
+\subsection{Innovation}
+Replaces recurrence with self-attention, enabling parallel computation.
+
+Since Transformers have no recurrence or convolution, they use positional encoding to inject sequence order information.
+
+Multiple attention layers run in parallel.
+
+\textbf{Encoder:} Processes the input sequence and encodes it into a set of hidden representations.
+
+\textbf{Decoder:} Generates the output sequence one token at a time using the encoder’s output and previously generated tokens.
+
+\subsection{Modern Application}
+\begin{itemize}
+    \item \textbf{Natural Language Processing (NLP):} Transformers power models like GPT and BERT, enabling advanced text generation, translation, and sentiment analysis.
+    \item \textbf{Computer Vision:} Vision Transformers (ViTs) are used for image classification and object detection, competing with convolutional neural networks (CNNs).
+    \item \textbf{Speech Recognition:} Transformers enhance automatic speech recognition (ASR) systems, improving accuracy in voice assistants and transcription services.
+\end{itemize}
+
+\subsection{Future Directions}
+The below diagram can be helpful in the improvements of the model.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=0.5\textwidth]{table 3.png} 
+    \caption{Additional Results or Analysis}
+    \label{fig:table3}
+\end{figure}
+
+\section{Full Analysis}
+
+\subsection{RNN (Recurrent Neural Network)}
+
+\begin{itemize}
+    \item Uses recurrent connections for memory retention.
+    \item Processes input sequences one step at a time.
+    \item Handles short-term dependencies effectively.
+    \item Learns via backpropagation through time (BPTT).
+    \item Generates a sequence of hidden states for input tokens.
+\end{itemize}
+
+Recurrent models typically factor computation along the positions of symbols in the input and output sequences, which limits parallelization and makes learning long-range dependencies difficult.
+
+\subsection{LSTM (Long Short-Term Memory)}
+
+\begin{itemize}
+    \item An improved variant of RNN designed to handle long-term dependencies.
+    \item Incorporates gates (input, forget, output) to control the flow of information.
+    \item Better suited for tasks involving long context, such as translation and speech recognition.
+\end{itemize}
+
+\subsection{GRNN (Gated Recurrent Neural Network)}
+
+\begin{itemize}
+    \item A general term that includes models like LSTM and GRU (Gated Recurrent Unit).
+    \item Sometimes used to refer to Radial Basis Function (RBF) networks with a recurrent structure.
+    \item Adds gating mechanisms to standard RNNs to improve performance on sequential tasks.
+\end{itemize}
+
+\subsection{Sequence Transduction}
+
+\textbf{Sequence transduction} refers to any process that takes an input sequence and produces an output sequence. Common applications include:
+
+\begin{itemize}
+    \item Machine translation (e.g., English to German).
+    \item Speech-to-text systems.
+    \item Summarization and text generation.
+\end{itemize}
+
+Traditional models like RNNs or LSTMs perform sequence transduction using sequential processing, which can be slow and hard to train over long sequences.
+
+\subsection{Transduction Modules in Transformers}
+
+In the Transformer architecture, transduction modules are the components that enable sequence-to-sequence conversion, namely:
+
+\begin{itemize}
+    \item \textbf{Encoder:} Processes the entire input sequence in parallel using self-attention, and encodes it into a contextual representation.
+    \item \textbf{Decoder:} Generates the output sequence, attending both to previous outputs and the encoder's representation.
+\end{itemize}
+
+These modules replace recurrence with attention mechanisms, allowing for faster training and better performance on long-range dependencies.
+
+\subsection{Related Architectures and Concepts}
+\begin{itemize}
+    \item \textbf{Extended Neural GPU:} Advanced neural network architecture built on neural GPU capabilities for parallel computing, algorithm learning, and memory efficiency.
+    \item \textbf{ByteNet:} Sequence modeling architecture using convolutional neural networks for efficient sequence transduction.
+    \item \textbf{ConvS2S:} Convolutional Sequence to Sequence models offer a middle ground between RNN-based models and attention-based Transformers, combining faster training times with effective context modeling. They integrate attention mechanisms to align input and output sequences effectively.
+    \item \textbf{Self-Attention:} Allows a neural network to weigh the importance of different elements in an input sequence while making predictions.
+    \item \textbf{Intra-Attention:} Attention between different positions within a single sequence.
+    \item \textbf{Recurrent Attention Mechanism:} Combines attention with RNN mechanisms.
+    \item \textbf{Seq Transduction Model:} Used to transform an input to output sequence.
+    \item \textbf{Residual Connection:} Introduced by ResNet, skip connections in deep learning neural networks.
+    \item \textbf{Decoder:} Performs multi-head attention over the output of the encoder stack.
+    \item \textbf{Layer Normalization:} A technique used to stabilize and accelerate the training of deep neural networks. It normalizes the inputs across the features of a single data sample, rather than across a batch (as in batch normalization).
+    \item \textbf{Attention:} Can be described as mapping a query and a set of key-value pairs to an output.
+    \item \textbf{Multi-Head Attention:} Core component of the Transformer architecture, allowing the model to attend to different positions in a sequence simultaneously and capture diverse relationships between tokens.
+    \item \textbf{BLEU score:} a metric used to evaluate the quality of machine-generated text—most commonly in machine translation—by comparing it to one or more reference translations written by humans.
+    \item\textbf{Regularization:}Regularization is a technique used in machine learning to prevent overfitting, which happens when a model learns the training data too well—including noise and outliers—resulting in poor generalization to unseen data.
+    \item \textbf{Residual Dropout: }It helps prevent overfitting by introducing randomness into the residual connections.
+    \item \textbf{Label Smoothing: }Label Smoothing is a regularization technique used in classification tasks to make the model less confident about its predictions, thereby improving generalization.
+    
+\subsection{}
+\end{itemize}
+
+\end{document}
